@@ -74,6 +74,8 @@ def wide_df(long_df):
     """ sorting the data at the beginning by end data and dropping duplicates """    
     annual_usd_df.sort_values(by='end_date', ascending=True, inplace=True)
     annual_usd_df.drop_duplicates(subset=['label', 'fiscal_year'], keep='last', inplace=True)
+
+    """ transform the data from label, fiscal_year and value into headers"""
     
     wide_df = annual_usd_df.pivot
     (
@@ -82,15 +84,18 @@ def wide_df(long_df):
         values='value'
     )
 
+    """ takes all not null's """
     cols_to_keep = [col for col in wide_df.columns if pd.notna(col)]
     wide_df = wide_df[cols_to_keep]
 
+    """ sorting the data to a readable Data Frame """
     wide_df.columns = [f"FY {int(col)}" for col in wide_df.columns]
     wide_df = wide_df.sort_index(axis=1, ascending=False)
     wide_df = wide_df.reset_index()
     wide_df.rename_axis(None, axis=1, inplace=True)
     wide_df.dropna(subset=['label'], inplace=True)
     return wide_df
+
 """
 code for handling errors
 
@@ -100,3 +105,4 @@ with open(path, 'r') as f:
 result_df = wide_df(flatten_financial_json(data))
 print(result_df)
 """
+
